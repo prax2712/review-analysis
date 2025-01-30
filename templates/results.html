@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}"> 
+    <title>Recommended Movies</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Recommended Movies</h1>
+        <ul>
+            {% for movie in movies %}
+                <li>
+                    <strong>{{ movie.title }}</strong> ({{ movie.year }})
+                    <p>{{ movie.info }}</p>
+                    <a href="https://www.imdb.com{{ movie.href }}" target="_blank">View on IMDb</a>
+                    <button onclick="window.location.href='/analyze?href={{ movie.href }}';">Analyze Reviews</button>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>

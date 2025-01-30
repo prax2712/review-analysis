@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <title>Review Analysis</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Review Analysis</h1>
+        <ul>
+            {% for i in range(reviews|length) %}
+                <li>
+                    <p>{{ reviews[i] }}</p>
+                    <strong>Sentiment: {{ labels[i] }}</strong>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="chart-container">
+        <div id="sentimentChart" style="width: 600px; height: 400px;"></div>
+    </div>
+
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script>
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(drawChart);
+
+        function drawChart() {
+            // Convert Python variables to JavaScript variables
+            const overallLabel = "{{ overall_label }}";
+            const overallConfidence = parseFloat("{{ overall_confidence }}");
+
+            let positiveConfidence;
+            let negativeConfidence;
+
+            if (overallLabel === 'positive') {
+                positiveConfidence = overallConfidence;
+                negativeConfidence = 1 - overallConfidence;
+            } else {
+                positiveConfidence = 1 - overallConfidence;
+                negativeConfidence = overallConfidence;
+            }
+
+            const data = google.visualization.arrayToDataTable([
+                ['Sentiment', 'Confidence'],
+                ['Positive', positiveConfidence],
+                ['Negative', negativeConfidence]
+            ]);
+
+            const options = {
+                title: 'Overall Sentiment Analysis Result',
+                pieHole: 0.4,
+                colors: ['#4caf50', '#f44336']
+            };
+
+            const chart = new google.visualization.PieChart(document.getElementById('sentimentChart'));
+            chart.draw(data, options);
+        }
+    </script>
+</body>
+</html>
